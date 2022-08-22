@@ -206,7 +206,7 @@ def wofFinalRound():
 def main():
     gameSetup()    
 
-    for i in range(0,2):
+    for i in range(0,maxrounds):
         if i in [0,1]:
             wofRound()
         else:

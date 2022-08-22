@@ -52,8 +52,8 @@ def guessLetter(letter, playerNum):
     global roundWord
     # parameters:  take in a letter guess and player number
     guessLetter = letter.upper()
-    print(f'guessLetter:{guessLetter}')
-    print(f'roundWord: {roundWord}')
+    #print(f'guessLetter:{guessLetter}')
+    #print(f'roundWord: {roundWord}')
     num = playerNum
     count = 0 # count correct letters in word from guessLetter
     # Change position of found letter in blankWord to the letter instead of underscore and update global blankWord with correctly guessed letters
@@ -68,7 +68,7 @@ def guessLetter(letter, playerNum):
     # return count of letters in word.
     ##### To Do: ensure letter is a consonate. #####
     
-    print(blankWord)
+    #print(blankWord)
     return goodGuess, count
 
 def spinWheel(playerNum):
@@ -83,7 +83,8 @@ def spinWheel(playerNum):
     print(f'Wheel result is: {wheelResult}')
     # Check for bankrupcy, and take action.
     if wheelResult == 'BANKRUPT':
-        stillinTurn = False ##### Set roundTotal to zero?
+        players[playerNum]["roundtotal"] = 0
+        stillinTurn = False 
     # Check for lose turn
     elif wheelResult == 'LOSE A TURN':
         stillinTurn = False
@@ -96,7 +97,7 @@ def spinWheel(playerNum):
     # Change player round total if they guess right. Else end the turn
         if goodGuess == True:
             players[playerNum]["roundtotal"] += wheelResult
-            players[playerNum]["gametotal"] += wheelResult
+            #players[playerNum]["gametotal"] += wheelResult
             print(f'Correct! There are {count} {letter}\'s in the word.')
         else:
             stillinTurn = False
@@ -104,8 +105,46 @@ def spinWheel(playerNum):
     print(f'Player totals after this turn are : {players}')
     return stillinTurn
 
+def buyVowel(playerNum):
+    global players
+    global vowels
+    #set stillinTurn to true
+    stillinTurn = True
+    # Take in a player number
+    # Ensure player has 250 for buying a vowelcost
+    if players[playerNum]["roundtotal"] >= 250:
+        # subtract 250 from 
+        players[playerNum]["roundtotal"] -= 250
+        vowel = input('Enter a vowel: ').upper()
+    # Use guessLetter function to see if the letter is in the file
+        goodGuess, count = guessLetter(vowel, playerNum)
+    # Ensure letter is a vowel 
+    # If letter is in the file let goodGuess = True
+        if goodGuess == True:
+            print(f'Correct! There are {count} {vowel}\'s in the word')
+        else: 
+            stillinTurn = False
+            print('Incorrect guess.')
+    else:
+        print('You don\'t have enough money to by a vowel.')
+    return stillinTurn#goodGuess  
 
-### function wofTurn (only spin wheel option available)
+def guessWord(playerNum):
+    global players
+    global blankWord
+    global roundWord
+    
+    # Take in player number
+    # Ask for input of the word and check if it is the same as wordguess
+    wordGuess = input('Enter word guess: ')
+    # Fill in blankList with all letters, instead of underscores if correct
+    if wordGuess.upper() == roundWord.upper():
+        #print('match true')
+        for i, v in enumerate(roundWord):
+            blankWord[i] = v
+    # return False (to indicate the turn will finish)
+    
+    return False
 
 def wofTurn(playerNum):  
     global roundWord
@@ -127,7 +166,7 @@ def wofTurn(playerNum):
         # use the string.format method to output your status for the round
         print(f'Round status is: Round {roundNum}, Player {playerNum}\'s turn.')
         # Get user input S for spin, B for buy a vowel, G for guess the word
-        choice = input(f'Player {playerNum}, would you like to (s)pin the wheel, (b)uy vowel, or G(uess) the word?')
+        choice = input(f'Player {playerNum}, would you like to (s)pin the wheel, (b)uy vowel, or (G)uess the word?')
                 
         if(choice.strip().upper() == "S"):
             stillinTurn = spinWheel(playerNum)
@@ -165,6 +204,8 @@ def wofRound():
         if blankWord == [x for x in roundWord]:
             wordnotSolved = False
     # Print roundstatus with string.format, tell people the state of the round as you are leaving a round.
+    for i in range(0,3):
+        players[i]["gametotal"] += players[i]["roundtotal"]
     print(f'End of round {roundNum} status: {players}')
 
 def main():
