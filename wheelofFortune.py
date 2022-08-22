@@ -127,6 +127,7 @@ def buyVowel(playerNum):
             print('Incorrect guess.')
     else:
         print('You don\'t have enough money to by a vowel.')
+    print(f'Player totals after this turn are : {players}')
     return stillinTurn#goodGuess  
 
 def guessWord(playerNum):
@@ -143,7 +144,8 @@ def guessWord(playerNum):
         for i, v in enumerate(roundWord):
             blankWord[i] = v
     # return False (to indicate the turn will finish)
-    
+    else:
+        print('Incorrect guess')
     return False
 
 def wofTurn(playerNum):  
@@ -162,6 +164,7 @@ def wofTurn(playerNum):
     while stillinTurn:
          
         # print blankWord and roundWord for debugging  
+        print('============================================================')
         print(f'blankWord: {blankWord}, roundWord: {[x for x in roundWord]}')
         # use the string.format method to output your status for the round
         print(f'Round status is: Round {roundNum}, Player {playerNum}\'s turn.')
@@ -208,16 +211,66 @@ def wofRound():
         players[i]["gametotal"] += players[i]["roundtotal"]
     print(f'End of round {roundNum} status: {players}')
 
+def wofFinalRound():
+    global roundWord
+    global blankWord
+    global players
+    winPlayer = 0
+    playerGameTotal = 0
+    
+    # Find highest gametotal player.  They are playing.
+    
+    for player in players.keys():
+        if players[player]["gametotal"] > playerGameTotal:
+            #print(player, players[player]["gametotal"])
+            #print(player, winPlayer)
+            playerGameTotal = players[player]["gametotal"]
+            winPlayer = player
+    print(f'Winner of the fisrt two rounds is player {winPlayer}, with total winnings ${playerGameTotal}.')    
+    # Print out instructions for that player and who the player is.
+    print(f'Congratulations player {winPlayer}, you are moving on to the final round!')
+    # Use the getWord function to reset the roundWord and the blankWord ( word with the underscores)
+    roundWord, blankWord = getWord()
+    print(f'Hint: roundWord: {roundWord}, blankWord: {blankWord}')
+    # Use the guessletter function to check for {'R','S','T','L','N','E'}
+    for i in ['R','S','T','L','N','E']:
+        guessLetter(i, winPlayer)
+    print(f'Player {winPlayer} below find your final word with R,S,T,L,N,E filled in')
+    # Print out the current blankWord with whats in it after applying {'R','S','T','L','N','E'}
+    print(f'blankWord: {blankWord}')
+    # Gather 3 consonats and 1 vowel and use the guessletter function to see if they are in the word
+    con_vow_guess = input('Enter 3 consanants and one vowel, separated by commas (i.e [X,Y,Z,A])')
+    con_vow_guess_list = [x.upper().strip() for x in con_vow_guess]
+    for i in con_vow_guess_list:
+        guessLetter(i, winPlayer)
+    # Print out the current blankWord again
+    print(f'Guesses so far: {blankWord}')
+    # Remember guessletter should fill in the letters with the positions in blankWord
+    # Get user to guess word
+    guessWord(winPlayer)
+    print(f'after guessWord: roundWord: {roundWord}, blankWord: {blankWord}')
+    # If they do, add finalprize and gametotal and print out that the player won
+    if blankWord == [x for x in roundWord]:
+        print(f'Correct! Congratulations player {winPlayer}! You won the grand prize of $1 Billion Dollars!!!')
+        players[winPlayer]["gametotal"] += 1000000000
+        print(f'Your total winnings are ${players[winPlayer]["gametotal"]}!!!')
+    else: 
+        print(f'Incorrect :(')
+        print(f'Your total winnings are ${players[winPlayer]["gametotal"]}!!!')
+    
+
 def main():
     #gameSetup()    
     global roundNum
-    for i in range(0,2):
+    print('Welcome to Wheel of Fortune!')
+    print('============================================================')
+    for i in range(0,3):
         if i in [0,1]:
             roundNum = i+1
             wofRound()
         else:
-            return#wofFinalRound() -> final round to dos
-
+            wofFinalRound()
+    print('Please play again soon!')
 if __name__ == "__main__":
     main()
     
